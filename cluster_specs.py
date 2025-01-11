@@ -63,7 +63,7 @@ def generate_cluster_config(num_vms, vm_ram, vm_cpus, vm_box):
 
     for i in range(1, num_vms + 1):
         vm_name = f"node{i}"
-        has_disk = i > 2  # Add a disk only to VMs after the first two
+        has_disk = i > num_vms - 2  # Add a disk only to the last two VMs
         config['vms'].append(OrderedDict([
             ('name', vm_name),
             ('memory', vm_ram),
