@@ -1,2 +1,3 @@
 .vagrant/
 cluster_config.yaml
+ubuntu-*
