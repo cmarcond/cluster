@@ -24,6 +24,9 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  # Disable shared folder
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
   # Define a private network for all VMs
   config.vm.network "private_network", type: "dhcp"
 end
