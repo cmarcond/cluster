@@ -1,4 +1,5 @@
 .vagrant/
 cluster_config.yaml
-invenventory.ini
+inventory.ini
+ansible.cfg
 ubuntu-**.log
