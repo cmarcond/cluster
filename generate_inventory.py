@@ -101,8 +101,8 @@ def generate_inventory_file(machine_ips):
 
     # Sort machines by name for consistent assignment of control plane nodes
     sorted_machines = sorted(machine_ips.items(), key=lambda x: x[0])
-    control_plane_nodes = sorted_machines[:2]
-    remaining_nodes = sorted_machines[2:]
+    control_plane_nodes = sorted_machines[:3]  # Use first 3 nodes as control plane
+    remaining_nodes = sorted_machines[3:]
 
     with open(inventory_file, "w") as inventory:
         inventory.write("[kube_control_plane]\n")
