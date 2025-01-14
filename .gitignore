@@ -3,5 +3,5 @@ cluster_config.yaml
 inventory.ini
 ansible.cfg
 ubuntu-**.log
-kubespray
-kubespray-venv
+kubespray/
+kubespray-venv/

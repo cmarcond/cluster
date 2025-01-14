@@ -12,7 +12,6 @@ def represent_ordered_dict(dumper, data):
 
 OrderedDumper.add_representer(OrderedDict, represent_ordered_dict)
 
-
 def get_physical_machine_specs():
     """
     Retrieve the physical machine's total RAM and CPU cores.
@@ -20,7 +19,6 @@ def get_physical_machine_specs():
     total_ram = int(psutil.virtual_memory().total / (1024 ** 2))  # Convert bytes to MB
     total_cpus = psutil.cpu_count(logical=True)  # Total logical CPUs
     return total_ram, total_cpus
-
 
 def calculate_vms(total_ram, total_cpus, reserved_ram, reserved_cpus, vm_ram):
     """
@@ -48,7 +46,6 @@ def calculate_vms(total_ram, total_cpus, reserved_ram, reserved_cpus, vm_ram):
 
     return num_vms, cores_per_vm
 
-
 def generate_cluster_config(num_vms, vm_ram, vm_cpus, vm_box):
     """
     Generate a YAML configuration for a cluster of VMs.
@@ -62,7 +59,7 @@ def generate_cluster_config(num_vms, vm_ram, vm_cpus, vm_box):
     config = {'vms': []}
 
     for i in range(1, num_vms + 1):
-        vm_name = f"node{i}"
+        vm_name = f"node{i:02}"  # Ensure two decimal places for node names
         has_disk = i > num_vms - 2  # Add a disk only to the last two VMs
         config['vms'].append(OrderedDict([
             ('name', vm_name),
@@ -74,7 +71,6 @@ def generate_cluster_config(num_vms, vm_ram, vm_cpus, vm_box):
 
     return config
 
-
 def save_config_to_yaml(config, filename):
     """
     Save the generated configuration to a YAML file.
@@ -84,7 +80,6 @@ def save_config_to_yaml(config, filename):
     """
     with open(filename, 'w') as yaml_file:
         yaml.dump(config, yaml_file, default_flow_style=False, sort_keys=False, Dumper=OrderedDumper)
-
 
 if __name__ == "__main__":
     # Base OS reserved resources
