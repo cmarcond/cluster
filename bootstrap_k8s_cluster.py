@@ -30,12 +30,20 @@ def run_cluster_specs():
 
 def vagrant_up():
     print("Running vagrant up...")
-    returncode, stdout, stderr = run_command("vagrant up", timeout=300)
-    if returncode != 0:
-        print("vagrant up failed or timed out. Destroying VMs...")
+    try:
+        proc = subprocess.Popen("vagrant up", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        for line in iter(proc.stdout.readline, ""):
+            print(line.strip())  # Show real-time output of vagrant up
+        proc.wait()
+        if proc.returncode != 0:
+            print("vagrant up failed. Destroying VMs...")
+            subprocess.run("vagrant destroy -f", shell=True)
+            exit(1)
+        print("vagrant up completed successfully.")
+    except Exception as e:
+        print(f"Error during vagrant up: {e}")
         subprocess.run("vagrant destroy -f", shell=True)
         exit(1)
-    print("vagrant up completed successfully.")
 
 def run_generate_inventory():
     print("Running generate_inventory.py...")
@@ -82,4 +90,3 @@ if __name__ == "__main__":
     install_kubespray()
     install_kubectl()
     print("Cluster orchestration completed successfully.")
-_
