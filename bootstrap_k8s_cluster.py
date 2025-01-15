@@ -26,6 +26,7 @@ def run_cluster_specs():
     if returncode != 0:
         print(f"Error in cluster_specs.py:\n{stderr}")
         exit(1)
+    print(stdout)
     print("cluster_specs.py completed successfully.")
 
 def vagrant_up():
@@ -47,16 +48,25 @@ def vagrant_up():
 
 def run_generate_inventory():
     print("Running generate_inventory.py...")
-    returncode, stdout, stderr = run_command("python3 generate_inventory.py")
-    if returncode != 0:
-        print(f"Error in generate_inventory.py:\n{stderr}")
+    try:
+        proc = subprocess.Popen("python3 generate_inventory.py", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        for line in iter(proc.stdout.readline, ""):
+            print(line.strip())  # Show real-time output
+        proc.wait()
+        if proc.returncode != 0:
+            print(f"Error in generate_inventory.py:\n{proc.stderr.read()}")
+            exit(1)
+        print("generate_inventory.py completed successfully.")
+    except Exception as e:
+        print(f"Error during generate_inventory.py: {e}")
         exit(1)
-    print("generate_inventory.py completed successfully.")
 
 def install_kubespray():
     print("Running install_kubespray.sh...")
-    proc = subprocess.Popen("./install_kubespray.sh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     try:
+        # Ensure the script is executable
+        subprocess.run("chmod +x install_kubespray.sh", shell=True, check=True)
+        proc = subprocess.Popen("./install_kubespray.sh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         for line in iter(proc.stdout.readline, ""):
             print(line.strip())  # Monitor ansible output
         proc.wait()
@@ -64,9 +74,8 @@ def install_kubespray():
             print(f"Kubespray installation failed:\n{proc.stderr.read()}")
             exit(1)
         print("Kubespray installation completed successfully.")
-    except KeyboardInterrupt:
-        proc.terminate()
-        print("Installation interrupted by user.")
+    except Exception as e:
+        print(f"Error during install_kubespray.sh: {e}")
         exit(1)
 
 def install_kubectl():
@@ -75,6 +84,7 @@ def install_kubectl():
     if returncode != 0:
         print(f"Error in install_kubectl.sh:\n{stderr}")
         exit(1)
+    print(stdout)
     print("Kubectl installed successfully.")
     print("Running kubectl commands to verify...")
     returncode, stdout, stderr = run_command("kubectl get nodes")
