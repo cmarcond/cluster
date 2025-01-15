@@ -1,7 +1,5 @@
 import subprocess
 import time
-import os
-import signal
 from threading import Timer
 
 def run_command(command, timeout=None):
@@ -20,6 +18,24 @@ def run_command(command, timeout=None):
     except Exception as e:
         return 1, "", f"Error running command: {e}"
 
+def run_script(script_name):
+    """
+    Run a script and display real-time output.
+    """
+    print(f"Running {script_name}...")
+    try:
+        proc = subprocess.Popen(f"./{script_name}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        for line in iter(proc.stdout.readline, ""):
+            print(line.strip())
+        proc.wait()
+        if proc.returncode != 0:
+            print(f"Error in {script_name}:\n{proc.stderr.read()}")
+            exit(1)
+        print(f"{script_name} completed successfully.")
+    except Exception as e:
+        print(f"Error during {script_name}: {e}")
+        exit(1)
+
 def run_cluster_specs():
     print("Running cluster_specs.py...")
     returncode, stdout, stderr = run_command("python3 cluster_specs.py")
@@ -34,7 +50,7 @@ def vagrant_up():
     try:
         proc = subprocess.Popen("vagrant up", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         for line in iter(proc.stdout.readline, ""):
-            print(line.strip())  # Show real-time output of vagrant up
+            print(line.strip())
         proc.wait()
         if proc.returncode != 0:
             print("vagrant up failed. Destroying VMs...")
@@ -51,7 +67,7 @@ def run_generate_inventory():
     try:
         proc = subprocess.Popen("python3 generate_inventory.py", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         for line in iter(proc.stdout.readline, ""):
-            print(line.strip())  # Show real-time output
+            print(line.strip())
         proc.wait()
         if proc.returncode != 0:
             print(f"Error in generate_inventory.py:\n{proc.stderr.read()}")
@@ -63,30 +79,16 @@ def run_generate_inventory():
 
 def install_kubespray():
     print("Running install_kubespray.sh...")
-    try:
-        # Ensure the script is executable
-        subprocess.run("chmod +x install_kubespray.sh", shell=True, check=True)
-        proc = subprocess.Popen("./install_kubespray.sh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        for line in iter(proc.stdout.readline, ""):
-            print(line.strip())  # Monitor ansible output
-        proc.wait()
-        if proc.returncode != 0:
-            print(f"Kubespray installation failed:\n{proc.stderr.read()}")
-            exit(1)
-        print("Kubespray installation completed successfully.")
-    except Exception as e:
-        print(f"Error during install_kubespray.sh: {e}")
-        exit(1)
+    run_script("install_kubespray.sh")
+
+def get_k8s_creds():
+    print("Running get_k8s_creds.sh...")
+    run_script("get_k8s_creds.sh")
 
 def install_kubectl():
     print("Running install_kubectl.sh...")
-    returncode, stdout, stderr = run_command("./install_kubectl.sh")
-    if returncode != 0:
-        print(f"Error in install_kubectl.sh:\n{stderr}")
-        exit(1)
-    print(stdout)
-    print("Kubectl installed successfully.")
-    print("Running kubectl commands to verify...")
+    run_script("install_kubectl.sh")
+    print("Verifying cluster with kubectl...")
     returncode, stdout, stderr = run_command("kubectl get nodes")
     if returncode != 0:
         print(f"Error running kubectl commands:\n{stderr}")
@@ -98,5 +100,6 @@ if __name__ == "__main__":
     vagrant_up()
     run_generate_inventory()
     install_kubespray()
+    get_k8s_creds()
     install_kubectl()
     print("Cluster orchestration completed successfully.")
