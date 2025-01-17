@@ -6,3 +6,5 @@ ubuntu-**.log
 kubectl*
 kubespray/
 kubespray-venv/
+rook/
+rook_ceph_cluster.yaml
