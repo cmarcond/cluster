@@ -21,6 +21,13 @@ Vagrant.configure("2") do |config|
         disk_name = "#{vm['name']}_disk"
         node.vm.disk :disk, size: "100GB", name: disk_name
       end
+
+      # Run script to load rbd module
+      node.vm.provision "shell", inline: <<-SHELL
+        echo "Loading rbd module..."
+        sudo modprobe rbd
+        echo rbd | sudo tee -a /etc/modules
+      SHELL
     end
   end
 
