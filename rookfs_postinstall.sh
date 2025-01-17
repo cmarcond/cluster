@@ -2,30 +2,30 @@
 
 set -e
 
-# Function to wait for specific pods to be running with a timeout
-wait_for_specific_pod() {
+# Function to wait for a specific pod to be in Running state
+wait_for_specific_pod_running() {
     local namespace=$1
     local pod_pattern=$2
     local timeout=$3 # Timeout in seconds
     local interval=10 # Check interval in seconds
     local elapsed=0
 
-    echo "Waiting for pods matching '$pod_pattern' in namespace '$namespace' to be in running state (timeout: $timeout seconds)..."
+    echo "Waiting for pod matching '$pod_pattern' in namespace '$namespace' to be in Running state (timeout: $timeout seconds)..."
     while true; do
-        PODS_NOT_RUNNING=$(kubectl get pods -n "$namespace" --no-headers | grep "$pod_pattern" | awk '$3 != "Running" {print $1}')
-        if [ -z "$PODS_NOT_RUNNING" ]; then
-            echo "All pods matching '$pod_pattern' in namespace '$namespace' are in running state."
+        POD=$(kubectl get pods -n "$namespace" --no-headers | grep "$pod_pattern" | awk '$3 == "Running" {print $1}')
+        if [[ -n "$POD" ]]; then
+            echo "Pod '$POD' in namespace '$namespace' is in Running state."
             break
         fi
 
         if [ "$elapsed" -ge "$timeout" ]; then
-            echo "Timeout reached while waiting for pods matching '$pod_pattern' in namespace '$namespace'."
-            echo "Remaining non-running pods:"
-            echo "$PODS_NOT_RUNNING"
+            echo "Timeout reached while waiting for pod '$pod_pattern' in namespace '$namespace'."
+            echo "Current pod state:"
+            kubectl get pods -n "$namespace" | grep "$pod_pattern"
             exit 1
         fi
 
-        echo "Waiting for pods matching '$pod_pattern' to be in running state..."
+        echo "Waiting for pod '$pod_pattern' to be in Running state... (Elapsed: $elapsed seconds)"
         sleep "$interval"
         elapsed=$((elapsed + interval))
     done
@@ -49,8 +49,8 @@ python3 generate_rook_yaml.py
 echo "Deploying the Rook Ceph cluster..."
 kubectl create -f rook_ceph_cluster.yaml
 
-# Wait for the specific Rook-Ceph OSD pod to be running with a timeout
-wait_for_specific_pod "rook-ceph" "rook-ceph-osd-0" 1200 # 1200 seconds (20 minutes) timeout
+# Wait for the specific Rook-Ceph OSD pod to be running
+wait_for_specific_pod_running "rook-ceph" "rook-ceph-osd-0" 1200 # 1200 seconds (20 minutes) timeout
 
 # Deploy the Rook toolbox
 echo "Deploying the Rook toolbox..."
