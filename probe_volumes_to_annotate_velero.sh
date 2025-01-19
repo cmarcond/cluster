@@ -36,6 +36,7 @@ for pod in $pods; do
     if [ -n "$pvc" ] && [ -n "$mountPath" ]; then
       echo "    PVC: $pvc, MountPath: $mountPath"
       echo "Annotating pod $pod with mount path $mountPath"
+      echo "kubectl annotate pod $pod -n $namespace backup.velero.io/backup-volumes=$mountPath --overwrite"
       #kubectl annotate pod $pod -n $namespace backup.velero.io/backup-volumes=$mountPath --overwrite
     fi
   done
