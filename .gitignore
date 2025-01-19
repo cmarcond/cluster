@@ -8,3 +8,6 @@ kubespray/
 kubespray-venv/
 rook/
 rook_ceph_cluster.yaml
+istio-*
+tkg-velero-backups
+velero-v1.14.0-*
