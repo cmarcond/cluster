@@ -59,7 +59,7 @@ def proxy_config_routes(ingress_pod):
     print(routes)
 
 if __name__ == "__main__":
-    ISTIO_VERSION = "1.18.0"
+    ISTIO_VERSION = "1.24.2"
     TARGET_ARCH = "x86_64"
     ISTIO_DIR = f"istio-{ISTIO_VERSION}"
     NAMESPACE = "default"
