@@ -89,11 +89,6 @@ def generate_rook_ceph_yaml(nodes):
             "storage": {
                 "useAllNodes": False,
                 "useAllDevices": False,
-                "config": {
-                    "allowDeviceClassUpdate": False,
-                    "allowOsdCrushWeightUpdate": False,
-                    "scheduleAlways": False
-                },
                 "nodes": [
                     {"name": nodes[-2], "devices": [{"name": "sdb"}]},
                     {"name": nodes[-1], "devices": [{"name": "sdb"}]}
