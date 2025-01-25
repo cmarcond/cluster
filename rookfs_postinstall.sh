@@ -33,7 +33,7 @@ wait_for_specific_pod_running() {
 
 # Clone the Rook repository
 echo "Cloning the Rook repository..."
-git clone --single-branch --branch v1.12.8 https://github.com/rook/rook.git
+git clone https://github.com/rook/rook.git
 cd rook/deploy/examples
 
 # Deploy Rook CRDs, common resources, and operator

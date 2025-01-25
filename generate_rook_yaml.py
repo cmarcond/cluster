@@ -24,13 +24,14 @@ def generate_rook_ceph_yaml(nodes):
         },
         "spec": {
             "cephVersion": {
-                "image": "quay.io/ceph/ceph:v17.2.6",
+                "image": "quay.io/ceph/ceph:v19.2.0",
                 "allowUnsupported": False
             },
             "dataDirHostPath": "/var/lib/rook",
             "skipUpgradeChecks": False,
             "continueUpgradeAfterChecksEvenIfNotHealthy": False,
             "waitTimeoutForHealthyOSDInMinutes": 10,
+            "upgradeOSDRequiresHealthyPGs": False,
             "mon": {
                 "count": 3,
                 "allowMultiplePerNode": False
@@ -39,7 +40,7 @@ def generate_rook_ceph_yaml(nodes):
                 "count": 2,
                 "allowMultiplePerNode": False,
                 "modules": [
-                    {"name": "pg_autoscaler", "enabled": True}
+                    {"name": "rook", "enabled": True}
                 ]
             },
             "dashboard": {
@@ -48,7 +49,11 @@ def generate_rook_ceph_yaml(nodes):
             },
             "monitoring": {
                 "enabled": False,
-                "metricsDisabled": False
+                "metricsDisabled": False,
+                "exporter": {
+                    "perfCountersPrioLimit": 5,
+                    "statsPeriodSeconds": 5
+                }
             },
             "network": {
                 "connections": {
@@ -84,6 +89,11 @@ def generate_rook_ceph_yaml(nodes):
             "storage": {
                 "useAllNodes": False,
                 "useAllDevices": False,
+                "config": {
+                    "allowDeviceClassUpdate": False,
+                    "allowOsdCrushWeightUpdate": False,
+                    "scheduleAlways": False
+                },
                 "nodes": [
                     {"name": nodes[-2], "devices": [{"name": "sdb"}]},
                     {"name": nodes[-1], "devices": [{"name": "sdb"}]}
@@ -94,6 +104,12 @@ def generate_rook_ceph_yaml(nodes):
                 "managePodBudgets": True,
                 "osdMaintenanceTimeout": 30,
                 "pgHealthCheckTimeout": 0
+            },
+            "csi": {
+                "readAffinity": {
+                    "enabled": False
+                },
+                "cephfs": None
             },
             "healthCheck": {
                 "daemonHealth": {
