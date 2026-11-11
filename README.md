@@ -42,5 +42,5 @@ A Linux host with VirtualBox, Vagrant, Python 3 (`pyyaml`, `psutil`) and enough 
   them to a Kubernetes Secret, before exposing the service.
 - The generated files (`cluster_config.yaml`, `inventory.ini`, the Kubespray checkout and the
   kubeconfig) are ignored by git.
-- This is the single-machine predecessor of the bare-metal OpenStack and Kubernetes cloud the author
-  runs for his research lab; it is kept as a small, self-contained example.
+- Written in early 2025 as a small, self-contained way to stand up a cluster for a course or an
+  experiment on a single server.
