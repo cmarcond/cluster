@@ -1,7 +1,6 @@
 import yaml
 import psutil
 from collections import OrderedDict
-from yaml.representer import SafeRepresenter
 
 # Helper function to represent OrderedDict as a normal YAML dictionary
 class OrderedDumper(yaml.SafeDumper):

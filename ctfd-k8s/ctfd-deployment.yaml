@@ -28,6 +28,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: ctfd-config
+            - secretRef:
+                name: ctfd-secrets
 ---
 apiVersion: v1
 kind: Service
