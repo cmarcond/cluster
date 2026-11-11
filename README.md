@@ -29,7 +29,7 @@ runs these steps in order and stops at the first failure:
 | `generate_rook_yaml.py`, `rookfs_postinstall.sh`, `storageclass.yaml` | Generate the Rook-Ceph cluster definition from the running nodes, wait for the Ceph pods and create the storage class. |
 | `istio_postinstall.py` | Runs `istioctl x precheck`, installs Istio with the chosen profile and prints the ingress gateway's routes. |
 | `probe_volumes_to_annotate_velero.sh <namespace>` | Finds the volumes of the pods in a namespace and annotates them so that Velero backs them up. |
-| `ctfd-k8s/` | Manifests for CTFd with MariaDB and Redis: namespace, config map, deployments and ingress. |
+| `ctfd-k8s/` | Manifests for CTFd with MariaDB and Redis: namespace, config map, secret, deployments and ingress. |
 
 ## Requirements
 
@@ -38,8 +38,10 @@ A Linux host with VirtualBox, Vagrant, Python 3 (`pyyaml`, `psutil`) and enough 
 
 ## Notes
 
-- The database passwords in `ctfd-k8s/` are placeholders written in plain text. Change them, and move
-  them to a Kubernetes Secret, before exposing the service.
+- The CTFd and database credentials live in `ctfd-k8s/ctfd-secret.yaml`, a Kubernetes Secret with
+  `CHANGE_ME` placeholders. Replace them before applying the manifests; the other manifests read the
+  passwords from that Secret.
+- The container images in `ctfd-k8s/` use the `latest` tag; pin versions for anything long-lived.
 - The generated files (`cluster_config.yaml`, `inventory.ini`, the Kubespray checkout and the
   kubeconfig) are ignored by git.
 - Written in early 2025 as a small, self-contained way to stand up a cluster for a course or an

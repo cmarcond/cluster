@@ -1,5 +1,4 @@
 import subprocess
-import time
 from threading import Timer
 
 def run_command(command, timeout=None):
